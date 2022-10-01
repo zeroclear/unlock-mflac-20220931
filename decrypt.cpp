@@ -255,7 +255,7 @@ void _fastcall UpdateIV(BYTE* InData,char* StrKey,BYTE* OutData)
 //其实我是后来发现https://gist.github.com/ix64/bcd72c151f21e1b050c9cc52d6ff27d5才知道的
 //尽管他们分享的资料有所帮助，但是有一说一，把这样的灰色项目做成web版，恨不得别人都去部署甚至盈利，多少沾点NT
 _declspec(naked)
-	BOOL _fastcall QQMusicDecryptKey(BYTE* RawData,DWORD RawSize,char* StrKey,BYTE* Buffer,DWORD* OutputSize)
+	BOOL _fastcall QQMusicDecryptKey(BYTE* RawData,DWORD RawSize,BYTE* MixKey,BYTE* Buffer,DWORD* OutputSize)
 {
 	_asm
 	{
@@ -483,8 +483,8 @@ A_565F498E: nop;	//int3
 	}
 }
 
-char* MixKey1="386ZJY!@#*$%^&)(";
-char* MixKey2="**#!(#$%&^a1cZ,T";
+BYTE* MixKey1=(BYTE*)"386ZJY!@#*$%^&)(";
+BYTE* MixKey2=(BYTE*)"**#!(#$%&^a1cZ,T";
 //和libm_sse2_tan_precise有关，有一个8字节的浮点参数106
 BYTE HalfMixKey[8]={0x69,0x56,0x46,0x38,0x2B,0x20,0x15,0x0B};
 
@@ -575,7 +575,7 @@ DWORD QmflacDecryptInternal(BYTE* InData,DWORD Size,DWORD Type,BYTE** OutDataPtr
 
 	DWORD Key6Size=Key5Size*2;
 	BYTE* Key6Data=new BYTE[Key6Size];
-	DecOK=QQMusicDecryptKey(Key5Data+8,Key5Size-8,(char*)MixKey3,Key6Data,&Key6Size);
+	DecOK=QQMusicDecryptKey(Key5Data+8,Key5Size-8,MixKey3,Key6Data,&Key6Size);
 	if (DecOK==FALSE)
 	{
 		Base64FreeBuf(Key2Data);
@@ -663,4 +663,11 @@ DWORD QmflacDecrypt(BYTE* InData,DWORD Size,BYTE** OutDataPtr,DWORD* ErrorInfo)
 		}
 	}
 	return 0;
+}
+
+//防止忘记
+void QmflacFreeMem(BYTE* Ptr)
+{
+	if (Ptr!=NULL)
+		delete[] Ptr;
 }
