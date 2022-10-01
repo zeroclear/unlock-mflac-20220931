@@ -1,2 +1,3 @@
-# unlock-mflac-20220931
-QQMusic mflac format enhance tool
+# QQMusic mflac format enhanced tool
+代码仅供学习交流使用，为规避相关风险，上传内容中缺少一个重要组件，无法直接运行
+互联网公司的软件经常更新，后期可能失效，2022.10.01测试正常
