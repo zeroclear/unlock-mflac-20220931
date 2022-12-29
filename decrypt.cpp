@@ -224,13 +224,13 @@ DWORD ReverseDword(DWORD d)
 	return (d1<<24)|(d2<<16)|(d3<<8)|(d4<<0);
 }
 
-void _fastcall UpdateIV(BYTE* InData,char* StrKey,BYTE* OutData)
+void _fastcall UpdateIV(BYTE* InData,char* MixKey,BYTE* OutData)
 {
 	DWORD Key2[4];
-	Key2[0]=ReverseDword(*(DWORD*)(StrKey+0));
-	Key2[1]=ReverseDword(*(DWORD*)(StrKey+4));
-	Key2[2]=ReverseDword(*(DWORD*)(StrKey+8));
-	Key2[3]=ReverseDword(*(DWORD*)(StrKey+12));
+	Key2[0]=ReverseDword(*(DWORD*)(MixKey+0));
+	Key2[1]=ReverseDword(*(DWORD*)(MixKey+4));
+	Key2[2]=ReverseDword(*(DWORD*)(MixKey+8));
+	Key2[3]=ReverseDword(*(DWORD*)(MixKey+12));
 
 	DWORD Base64Key1=ReverseDword(*(DWORD*)(InData+0));
 	DWORD Base64Key2=ReverseDword(*(DWORD*)(InData+4));

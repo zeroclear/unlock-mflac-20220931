@@ -4,6 +4,19 @@
 
 DWORD QmflacDecrypt(BYTE* InData,DWORD Size,BYTE** OutDataPtr,DWORD* ErrorInfo);
 
+WCHAR* GetFileExt(WCHAR* FileName)
+{
+	int Len=wcslen(FileName);
+	for (WCHAR* n=FileName+Len-1;n!=FileName;n--)
+	{
+		if (*n==L'.')
+			return n;
+		else if (*n==L'\\')
+			return NULL;
+	}
+	return NULL;
+}
+
 void OnInitDialog(HWND hWndDlg)
 {
 
@@ -54,7 +67,12 @@ void OnCommand(HWND hWndDlg,int nCtlID,int nNotify)
 				}
 				else
 				{
-					memcpy(Name+Len-5,L"flac\0",5*sizeof(WCHAR));
+					WCHAR* Ext=GetFileExt(Name);
+					if (wcscmp(Ext,L".mflac")==0)
+						memcpy(Name+Len-5,L"flac\0",5*sizeof(WCHAR));
+					else if (wcscmp(Ext,L".mgg")==0)
+						memcpy(Name+Len-3,L"ogg\0",4*sizeof(WCHAR));
+
 					HANDLE hFileW=CreateFile(Name,GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
 					WriteFile(hFileW,OutData,Size,&Size,NULL);
 					CloseHandle(hFileW);
@@ -95,9 +113,9 @@ void OnDropFile(HWND hWndDlg,HDROP hDrop)
 			int Len=DragQueryFile(hDrop,0,NULL,0);
 			WCHAR* Name=new WCHAR[Len+1];
 			Len=DragQueryFile(hDrop,0,Name,Len+1);
-			//C:\1.mflac
-			if (Len<10 || memcmp(Name+Len-6,L".mflac",6*sizeof(WCHAR))!=0)
-				MessageBox(hWndDlg,L"只支持.mflac文件",L"ok",MB_OK);
+			WCHAR* Ext=GetFileExt(Name);	//相信DragQueryFile的结果，不进行额外检测
+			if (Ext==NULL || (wcscmp(Ext,L".mflac")!=0 && wcscmp(Ext,L".mgg")!=0))
+				MessageBox(hWndDlg,L"只支持.mflac和.mgg文件",L"ok",MB_OK);
 			else
 				SetDlgItemText(hWndDlg,IDE_PATH,Name);
 			delete[] Name;
